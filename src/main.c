@@ -10,7 +10,7 @@ int main()
 
 	for (int i = 0; i < 100; i++)
 	{
-		printf("%d\n", *((int*)VecPush(numbers, &i)));
+		printf("%d\n", *((int*)VecPushBack(numbers, &i)));
 	}
 
 

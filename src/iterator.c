@@ -19,5 +19,11 @@ Item IterPrev(Iter iterator)
 
 void IterFree(Iter iterator)
 {
+	// Frees the memory of the child object
+	if (iterator->vtable->free)
+	{
+		iterator->vtable->free(iterator);
+	}
+
 	free(iterator);
 }
