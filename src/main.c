@@ -10,21 +10,25 @@ int main()
 
 	for (int i = 0; i < 100; i++)
 	{
-		printf("%d\n", *((int*)VecPushBack(numbers, &i)));
+		VecPushBack(numbers, &i);
 	}
 
+	Iter iterator = IterVecNew(numbers, 0, 99);
 
-	printf("%d\n", *((int*)VecGet(numbers, 0)));
-
-	Iter iterator = IterVecNew(numbers);
-	int* num = IterNext(iterator);
-
-	while (num)
+	int i = 0;
+	for (int* num = IterEnd(iterator); num; )
 	{
 		printf("%d\n", *num);
-		num = IterNext(iterator);
-	}
 
+		if (i++ % 2 == 0)
+		{
+			num = IterPrev(iterator, 2);
+		}
+		else
+		{
+			num = IterNext(iterator, 1);
+		}
+	}
 
 	IterFree(iterator);
 	VecFree(numbers);

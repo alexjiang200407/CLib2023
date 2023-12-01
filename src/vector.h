@@ -4,6 +4,7 @@
 #include "types.h"
 #include "iterator.h"
 
+// A vector data structure. Not thread safe
 typedef struct vector* Vector;
 
 /// <summary>
@@ -14,7 +15,6 @@ typedef struct vector* Vector;
 /// <param name="startingCapacity">The starting capacity of the vector</param>
 /// <returns>New vector structure, NULL if failure</returns>
 Vector VecNew(size_t itemSz, size_t startingCapacity);
-
 
 /// <summary>
 /// Frees a vector data structure. Assumes all threads have no use for the vector.
@@ -32,7 +32,6 @@ void VecFree(Vector vector);
 /// <returns>Returns the new capacity of the vector. 0 on failure</returns>
 size_t VecResize(Vector vector, size_t capacity);
 
-
 /// <summary>
 /// Adds an item to the end of the vector.
 /// </summary>
@@ -45,6 +44,7 @@ Item VecPushBack(Vector vector, Item item);
 /// <summary>
 /// Removes the item at the end of the vector. Does not destroy the item in the process
 /// </summary>
+/// 
 /// <returns>The item removed from the vector</returns>
 /// <param name="vector">The vector object</param>
 Item VecPopBack(Vector vector);
@@ -56,16 +56,6 @@ Item VecPopBack(Vector vector);
 /// <param name="vector">The vector object</param>
 void VecPopBackD(Vector vector);
 
-
-/// <summary>
-/// Creates a new iterator for a vector data structure
-/// </summary>
-/// 
-/// <param name="vector"></param>
-/// <returns></returns>
-Iter IterVecNew(Vector vector);
-
-
 /// <summary>
 /// Gets an item from stored in a vector
 /// </summary>
@@ -74,3 +64,35 @@ Iter IterVecNew(Vector vector);
 /// <param name="index">Index of the item in the vector</param>
 /// <returns></returns>
 Item VecGet(Vector vector, size_t index);
+
+/// <summary>
+/// Get the front item of the vector
+/// </summary>
+/// 
+/// <param name="vector">The specified vector</param>
+/// <returns>The front item of the vector</returns>
+Item VecFront(Vector vector);
+
+/// <summary>
+/// Get the back item of the vector
+/// </summary>
+/// 
+/// <param name="vector">The specified vector</param>
+/// <returns>The back item of the vector</returns>
+Item VecBack(Vector vector);
+
+/// <summary>
+/// Returns the size of a vector structure.
+/// </summary>
+/// 
+/// <param name="vector">The vector</param>
+/// <returns>The size of the vector</returns>
+size_t VecSize(Vector vector);
+
+/// <summary>
+/// Creates a new iterator for a vector data structure
+/// </summary>
+/// 
+/// <param name="vector">The vector to iterate over. Modifying the vector's fields (not the individual items) will invalidate the iterator.</param>
+/// <returns>The vector iterator</returns>
+Iter IterVecNew(Vector vector, size_t start, size_t end);
