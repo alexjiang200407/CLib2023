@@ -11,7 +11,7 @@ typedef struct vector* Vector;
 /// Creates a new vector structure on the heap
 /// </summary>
 /// 
-/// <param name="itemSz">Size of each item in the vector.</param>
+/// <param name="itemSz">Size of each item in the vector. Max size when using polymorphism</param>
 /// <param name="startingCapacity">The starting capacity of the vector</param>
 /// <returns>New vector structure, NULL if failure</returns>
 Vector VecNew(size_t itemSz, size_t startingCapacity);
@@ -24,7 +24,7 @@ Vector VecNew(size_t itemSz, size_t startingCapacity);
 void VecFree(Vector vector);
 
 /// <summary>
-/// Resizes a vector, setting its capacity
+/// Resizes a vector, setting its capacity. Cannot be used when iterating with iterator
 /// </summary>
 /// 
 /// <param name="vector">The vector to resize</param>
@@ -33,7 +33,7 @@ void VecFree(Vector vector);
 size_t VecResize(Vector vector, size_t capacity);
 
 /// <summary>
-/// Adds an item to the end of the vector.
+/// Adds an item to the end of the vector. Cannot be used when iterating with iterator
 /// </summary>
 /// 
 /// <param name="vector">The vector to add to</param>
@@ -42,7 +42,7 @@ size_t VecResize(Vector vector, size_t capacity);
 Item VecPushBack(Vector vector, Item item);
 
 /// <summary>
-/// Removes the item at the end of the vector. Does not destroy the item in the process
+/// Removes the item at the end of the vector. Does not destroy the item in the process. Cannot be used when iterating with iterator
 /// </summary>
 /// 
 /// <returns>The item removed from the vector</returns>

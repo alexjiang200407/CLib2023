@@ -7,6 +7,50 @@
 
 Item IterNext(Iter iterator, size_t step)
 {
+	//assert(iterator);
+	//assert(step >= 1);
+
+	//// Can't move past end bound
+	//if (iterator->flags & ITERATOR_AT_END)
+	//{
+	//	return NULL;
+	//}
+
+	//Item curr = iterator->vtable->get(iterator);
+	//for (int i = 0; i < step; i++)
+	//{
+	//	// Can't move past end bound
+	//	if (iterator->flags & ITERATOR_AT_END)
+	//	{
+	//		return NULL;
+	//	}
+
+	//	curr = iterator->vtable->next(iterator);
+
+	//	// At the end bound
+	//	if (curr == *iterator->end)
+	//	{
+	//		iterator->flags |= ITERATOR_AT_END;
+	//	}
+	//	// No longer at start if we move to the next
+	//	if (iterator->flags & ITERATOR_AT_START)
+	//	{
+	//		iterator->flags ^= ITERATOR_AT_START;
+	//	}
+	//}
+	//return curr;
+
+	Item* retVal = IterNextP(iterator, step);
+
+	if (retVal)
+	{
+		return *retVal;
+	}
+	return NULL;
+}
+
+Item* IterNextP(Iter iterator, size_t step)
+{
 	assert(iterator);
 	assert(step >= 1);
 
@@ -16,7 +60,7 @@ Item IterNext(Iter iterator, size_t step)
 		return NULL;
 	}
 
-	Item curr = iterator->vtable->get(iterator);
+	Item* curr = iterator->vtable->get(iterator);
 	for (int i = 0; i < step; i++)
 	{
 		// Can't move past end bound
@@ -28,7 +72,7 @@ Item IterNext(Iter iterator, size_t step)
 		curr = iterator->vtable->next(iterator);
 
 		// At the end bound
-		if (curr == iterator->end)
+		if (*curr == *iterator->end)
 		{
 			iterator->flags |= ITERATOR_AT_END;
 		}
@@ -43,6 +87,50 @@ Item IterNext(Iter iterator, size_t step)
 
 Item IterPrev(Iter iterator, size_t step)
 {
+	//assert(iterator);
+	//assert(step >= 1);
+
+	//// Can't move past end bound
+	//if (iterator->flags & ITERATOR_AT_START)
+	//{
+	//	return NULL;
+	//}
+
+	//Item curr = iterator->vtable->get(iterator);
+	//for (int i = 0; i < step; i++)
+	//{
+	//	// Can't move before start bound
+	//	if (iterator->flags & ITERATOR_AT_START)
+	//	{
+	//		return NULL;
+	//	}
+
+	//	curr = iterator->vtable->prev(iterator);
+
+	//	// At the start bound
+	//	if (curr == *iterator->start)
+	//	{
+	//		iterator->flags |= ITERATOR_AT_START;
+	//	}
+	//	// No longer at end if we move to the next
+	//	if (iterator->flags & ITERATOR_AT_END)
+	//	{
+	//		iterator->flags ^= ITERATOR_AT_END;
+	//	}
+	//}
+	//return curr;
+
+	Item* retVal = IterPrevP(iterator, step);
+
+	if (retVal)
+	{
+		return *retVal;
+	}
+	return NULL;
+}
+
+Item* IterPrevP(Iter iterator, size_t step)
+{
 	assert(iterator);
 	assert(step >= 1);
 
@@ -52,7 +140,7 @@ Item IterPrev(Iter iterator, size_t step)
 		return NULL;
 	}
 
-	Item curr = iterator->vtable->get(iterator);
+	Item* curr = iterator->vtable->get(iterator);
 	for (int i = 0; i < step; i++)
 	{
 		// Can't move before start bound
@@ -64,7 +152,7 @@ Item IterPrev(Iter iterator, size_t step)
 		curr = iterator->vtable->prev(iterator);
 
 		// At the start bound
-		if (curr == iterator->start)
+		if (*curr == *iterator->start)
 		{
 			iterator->flags |= ITERATOR_AT_START;
 		}
@@ -81,6 +169,13 @@ Iter IterNew(Item* start, Item* end, IterVtable* vtable, size_t iteratorSz)
 {
 	assert(iteratorSz != 0);
 	assert(vtable != NULL);
+
+	// Necessary functions in vtable
+	assert(vtable->get);
+	assert(vtable->next);
+	assert(vtable->prev);
+	assert(vtable->setPos);
+	assert(vtable->cpy);
 
 	Iter iterator = malloc(iteratorSz);
 
@@ -127,6 +222,39 @@ void IterFree(Iter iterator)
 
 Item IterEnd(Iter iterator)
 {
+	return *IterEndP(iterator);
+}
+
+Item IterStart(Iter iterator)
+{
+	return *IterStartP(iterator);
+}
+
+Item* IterStartP(Iter iterator)
+{
+	// Set the position of the iterator to the start
+	iterator->vtable->setPos(iterator, iterator->start);
+
+	// If one element we just update the flags and return
+	if (*iterator->start == *iterator->end)
+	{
+		iterator->flags |= (ITERATOR_AT_END | ITERATOR_AT_START);
+		return iterator->start;
+	}
+
+	iterator->flags |= ITERATOR_AT_START;
+
+	// If we were at end previously then we must update the flags
+	if (iterator->flags & ITERATOR_AT_END)
+	{
+		iterator->flags ^= ITERATOR_AT_END;
+	}
+
+	return iterator->start;
+}
+
+Item* IterEndP(Iter iterator)
+{
 	// Set the position of the iterator to the end
 	iterator->vtable->setPos(iterator, iterator->end);
 
@@ -134,7 +262,7 @@ Item IterEnd(Iter iterator)
 	if (*iterator->start == *iterator->end)
 	{
 		iterator->flags |= (ITERATOR_AT_END | ITERATOR_AT_START);
-		return *iterator->end;
+		return iterator->end;
 	}
 
 	iterator->flags |= ITERATOR_AT_END;
@@ -144,29 +272,21 @@ Item IterEnd(Iter iterator)
 	{
 		iterator->flags ^= ITERATOR_AT_START;
 	}
-	
-	return *iterator->end;
+
+	return iterator->end;
 }
 
-Item IterStart(Iter iterator)
+Item* IterGetStart(Iter iterator)
 {
-	// Set the position of the iterator to the start
-	iterator->vtable->setPos(iterator, iterator->start);
+	return iterator->start;
+}
 
-	// If one element we just update the flags and return
-	if (*iterator->start == *iterator->end)
-	{
-		iterator->flags |= (ITERATOR_AT_END | ITERATOR_AT_START);
-		return *iterator->start;
-	}
+Item* IterGetEnd(Iter iterator)
+{
+	return iterator->end;
+}
 
-	iterator->flags |= ITERATOR_AT_START;
-
-	// If we were at start previously then we must update the flags
-	if (iterator->flags & ITERATOR_AT_END)
-	{
-		iterator->flags ^= ITERATOR_AT_END;
-	}
-
-	return *iterator->start;
+Iter IterCpy(Iter iterator, Item* start, Item* end)
+{
+	return iterator->vtable->cpy(iterator, start, end);
 }
