@@ -3,13 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 
-// Functions for the vtable
-Item* IterVecPrev(Iter iterator);
-Item* IterVecNext(Iter iterator);
-Item* IterVecGet(Iter iterator);
-void  IterVecSetPos(Iter iterator, Item* newPos);
-Iter  IterVecCpy(Iter copy, Item* start, Item* end);
-
 struct vector
 {
 	size_t		itemSz;			// Size of the item
@@ -17,25 +10,6 @@ struct vector
 	size_t		capacity;		// When number of items passes this value, realloc memory
 	Item*		items;			// Items stored by structure
 };
-
-// Iterator object for quick and easy iteraton
-typedef struct vectorIterator
-{
-	iterator_t  base;			// base copy class
-	Vector      vector;			// The vector
-	Item*		ptr;			// Points to the current item
-}* IterVec;
-
-
-static IterVtable vectorIteratorVtable = {
-	.prev	= IterVecPrev,
-	.next	= IterVecNext,
-	.get	= IterVecGet,
-	.setPos = IterVecSetPos,
-	.cpy	= IterVecCpy,
-	.free	= NULL
-};
-
 
 Vector VecNew(size_t itemSz, size_t startingCapacity)
 {
@@ -182,103 +156,7 @@ size_t VecSize(Vector vector)
 	return vector->itemC;
 }
 
-
-Iter IterVecNew(Vector vector, size_t start, size_t end)
+Item* VecData(Vector vector)
 {
-	assert(vector);
-	assert(start >= 0 && start < vector->itemC);
-	assert(end >= 0 && end < vector->itemC);
-	assert(start <= end);
-
-	// Construct the base object
-	IterVec iterator = IterNew(&vector->items[start], &vector->items[end], &vectorIteratorVtable, sizeof(struct vectorIterator));
-	if (!iterator)
-	{
-		return NULL;
-	}
-
-	iterator->ptr = &vector->items[start];
-	iterator->vector = vector;
-
-	return iterator;
-}
-
-Item* IterVecNext(Iter iterator)
-{
-	assert(iterator);
-
-	IterVec iterVec = iterator;
-
-	assert(iterVec->vector);
-
-	// Is the last element, cant go further
-	if (iterVec->ptr == &iterVec->vector->items[iterVec->vector->itemC - 1])
-	{
-		return NULL;
-	}
-
-	// Increment pointer to get previous item then return the previous item 
-	return ++iterVec->ptr;
-}
-
-Item* IterVecPrev(Iter iterator)
-{
-	assert(iterator);
-
-	IterVec iterVec = iterator;
-
-	assert(iterVec->vector);
-
-	// Is the first element, cant go previous
-	if (iterVec->ptr == iterVec->vector->items)
-	{
-		return NULL;
-	}
-
-	// Decrement pointer to get previous item then return the previous item 
-	return --iterVec->ptr;
-}
-
-Item* IterVecGet(Iter iterator)
-{
-	assert(iterator);
-
-	IterVec iterVec = iterator;
-
-	return iterVec->ptr;
-}
-
-
-void IterVecSetPos(Iter iterator, Item* newPos)
-{
-	assert(iterator);
-	assert(newPos);
-
-	IterVec iterVec = iterator;
-	iterVec->ptr = newPos;
-}
-
-Iter IterVecCpy(Iter copy, Item* start, Item* end)
-{
-	assert(copy);
-	assert(start);
-	assert(end);
-
-	IterVec iterVec = copy;
-
-	// Make sure the iterator's range is valid
-	assert(start >= iterVec->vector->items);
-	assert(end <= &iterVec->vector->items[iterVec->vector->itemC - 1]);
-
-	// Create a new iterator with the same vtable and size
-	IterVec iterator = IterNew(start, end, &vectorIteratorVtable, sizeof(struct vectorIterator));
-	if (!iterator)
-	{
-		return NULL;
-	}
-
-	iterator->ptr = start;
-	iterator->vector = iterVec->vector;
-
-	return iterator;
+	return vector->items;
 }

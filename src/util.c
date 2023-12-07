@@ -1,4 +1,4 @@
-#include "stringUtil.h"
+#include "util.h"
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -25,4 +25,9 @@ char* formatBuf(size_t* bufSz, const char* const fmt, ...)
 
 	va_end(args);
 	return buf;
+}
+
+int rng(int min, int max)
+{
+	return rand() % (max + 1 - min) + min;
 }

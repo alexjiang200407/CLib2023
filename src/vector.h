@@ -90,9 +90,8 @@ Item VecBack(Vector vector);
 size_t VecSize(Vector vector);
 
 /// <summary>
-/// Creates a new iterator for a vector data structure
+/// Gets the data portion of the vector
 /// </summary>
-/// 
-/// <param name="vector">The vector to iterate over. Modifying the vector's fields (not the individual items) will invalidate the iterator.</param>
-/// <returns>The vector iterator</returns>
-Iter IterVecNew(Vector vector, size_t start, size_t end);
+/// <param name="vector">The specified vector</param>
+/// <returns>The data portion of the vector</returns>
+Item* VecData(Vector vector);
