@@ -4,6 +4,8 @@ file(GLOB_RECURSE SOURCE_FILES
 	"src/*.c"
 )
 
+list(REMOVE_ITEM SOURCE_FILES "src/main.c")
+
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
 	PREFIX "Source Files"
 	FILES ${SOURCE_FILES})

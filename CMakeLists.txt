@@ -2,25 +2,28 @@
 # project specific logic here.
 #
 cmake_minimum_required (VERSION 3.8)
-
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 project("MyCLib")
 
-
 add_executable(
 	"${PROJECT_NAME}"
 )
+
+include_directories(include)
+
 set_target_properties(MyCLib PROPERTIES LINKER_LANGUAGE C)
 
 include(cmake/headerlist.cmake)
 include(cmake/sourcelist.cmake)
 
 target_sources(${PROJECT_NAME} PRIVATE ${HEADER_FILES})
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES})
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} src/main.c)
 
+add_library(mylib SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET MyCLib PROPERTY CXX_STANDARD 20)

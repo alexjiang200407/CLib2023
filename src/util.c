@@ -8,6 +8,7 @@ char* formatBuf(size_t* bufSz, const char* const fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 
+	// First vsnprintf gets the length of the buffer minus null character
 	size_t len = vsnprintf(NULL, 0, fmt, args);
 
 	if (bufSz)
@@ -15,6 +16,7 @@ char* formatBuf(size_t* bufSz, const char* const fmt, ...)
 		*bufSz = len;
 	}
 
+	// Malloc enough bytes for string
 	char* buf = malloc(len + 1);
 
 	if (!buf)
@@ -22,6 +24,7 @@ char* formatBuf(size_t* bufSz, const char* const fmt, ...)
 		return NULL;
 	}
 
+	// Now print for real
 	vsnprintf(buf, len + 1, fmt, args);
 
 	va_end(args);
@@ -30,6 +33,7 @@ char* formatBuf(size_t* bufSz, const char* const fmt, ...)
 
 int rng(int min, int max)
 {
+	// Return random number between range
 	return rand() % (max + 1 - min) + min;
 }
 

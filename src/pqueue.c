@@ -5,8 +5,8 @@
 
 typedef struct pqueue
 {
-	cmpF   cmp;
-	Vector data;
+	cmpF   cmp;		// Comparison function
+	Array data;    // The data of the array
 };
 
 Item* getParent(Item* array, size_t* index);
@@ -27,7 +27,7 @@ PQueue PQNew(size_t elemSz, cmpF cmp)
 
 	// Set the comparison function for pq
 	queue->cmp = cmp;
-	queue->data = VecNew(elemSz, 1);
+	queue->data = ArrayNew(elemSz, 1);
 
 	return queue;
 }
@@ -37,7 +37,7 @@ bool PQIsEmpty(PQueue queue)
 	assert(queue);
 
 	// If size is 0 then PQ is empty
-	return *VecSize(queue->data) == 0;
+	return *ArraySize(queue->data) == 0;
 }
 
 Item PQInsert(PQueue queue, Item insert)
@@ -45,21 +45,21 @@ Item PQInsert(PQueue queue, Item insert)
 	assert(queue);
 	assert(insert);
 
-	size_t size = *VecSize(queue->data);
+	size_t size = *ArraySize(queue->data);
 
 	// Resize the array if capacity equals the size
-	if (VecCapacity(queue->data) <= size)
+	if (ArrayCapacity(queue->data) <= size)
 	{
-		if (!VecResize(queue->data, 2 * size))
+		if (!ArrayResize(queue->data, 2 * size))
 		{
 			return NULL;
 		}
 	}
 
-	Item* array = VecData(queue->data);
+	Item* array = ArrayData(queue->data);
 
 	// Copy item from stack to heap
-	Item newItem = CpyToHeap(insert, VecElemSz(queue->data));
+	Item newItem = CpyToHeap(insert, ArrayElemSz(queue->data));
 
 	if (!newItem)
 	{
@@ -71,8 +71,8 @@ Item PQInsert(PQueue queue, Item insert)
 
 	heapifyUp(queue, size);
 
-	// Increase the vector size by one
-	(*VecSize(queue->data))++;
+	// Increase the array size by one
+	(*ArraySize(queue->data))++;
 
 	return newItem;
 }
@@ -98,19 +98,19 @@ Item PQPeek(PQueue queue)
 		return NULL;
 	}
 
-	return VecGet(queue->data, 0);
+	return ArrayGet(queue->data, 0);
 }
 
 Item PQRemove(PQueue queue, size_t i)
 {
-	assert(i < VecSize(queue->data));
+	assert(i < ArraySize(queue->data));
 
-	Item ret = VecGet(queue->data, i);
+	Item ret = ArrayGet(queue->data, i);
 
-	Item* data = VecData(queue->data);
+	Item* data = ArrayData(queue->data);
 
-	// Reduce size of vector by one
-	size_t newSz = --(*VecSize(queue->data));
+	// Reduce size of array by one
+	size_t newSz = --(*ArraySize(queue->data));
 
 	// Only one element dont need to do anything
 	if (newSz == i)
@@ -131,9 +131,9 @@ Item PQRemove(PQueue queue, size_t i)
 	}
 
 	// Reduce the capacity of the data if it is twice as large as the actual size
-	if (VecCapacity(queue->data) >= 2 * newSz)
+	if (ArrayCapacity(queue->data) >= 2 * newSz)
 	{
-		VecResize(queue->data, *VecSize(queue->data));
+		ArrayResize(queue->data, *ArraySize(queue->data));
 	}
 
 	return ret;
@@ -147,18 +147,18 @@ Item PQPop(PQueue queue)
 
 void PQFree(PQueue queue)
 {
-	VecFree(queue->data);
+	ArrayFree(queue->data);
 	free(queue);
 }
 
 
 void heapifyUp(PQueue queue, size_t i)
 {
-	Item* array = VecData(queue->data);
+	Item* array = ArrayData(queue->data);
 	while (i != 0)
 	{
-		int** current = &array[i];
-		int** parent = getParent(array, &i);
+		Item* current = &array[i];
+		Item* parent = getParent(array, &i);
 
 		// If parent is smaller than current then swap
 		if (queue->cmp(*parent, *current) < 0)
@@ -174,7 +174,7 @@ void heapifyUp(PQueue queue, size_t i)
 
 void heapifyDown(PQueue queue, size_t i, size_t n)
 {
-	Item* data = VecData(queue->data);
+	Item* data = ArrayData(queue->data);
 	for (; ;)
 	{
 		// Get the left and right indexs

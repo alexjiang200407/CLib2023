@@ -3,18 +3,47 @@
 #include <stdlib.h>
 #include <time.h>
 #include "util.h"
+#include "array.h"
 
 void testQueue(void);
+void testArray(void);
 int cmpInt(Item lhs, Item rhs);
 int cmpIntD(Item lhs, Item rhs);
 
 int main(void)
 {
 	srand(time(NULL));
+	testArray();
 	testQueue();
 	return 0;
 }
 
+void testArray(void)
+{
+	printf("testing array data structure: status ");
+
+	Array v = ArrayNew(sizeof(int), 10);
+	int arr[100];
+
+	for (int i = 0; i < 100; i++)
+	{
+		arr[i] = rng(0, 1000);
+		ArrayPushBack(v, &arr[i]);
+	}
+
+	int i = 0;
+	for_each_in_arr(j, v)
+	{
+		if (arr[i] != *((int*)j))
+		{
+			ArrayFree(v);
+			printf("failed\n");
+			return;
+		}
+		i++;
+	}
+	printf("success\n");
+}
 
 void testQueue(void)
 {
