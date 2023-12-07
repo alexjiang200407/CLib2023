@@ -1,6 +1,7 @@
 #include "util.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 char* formatBuf(size_t* bufSz, const char* const fmt, ...)
 {
@@ -30,4 +31,23 @@ char* formatBuf(size_t* bufSz, const char* const fmt, ...)
 int rng(int min, int max)
 {
 	return rand() % (max + 1 - min) + min;
+}
+
+void* CpyToHeap(void* cpy, size_t sz)
+{
+	void* ret = malloc(sz);
+	if (!ret)
+	{
+		return NULL;
+	}
+
+	memcpy(ret, cpy, sz);
+	return ret;
+}
+
+void swap(Item* lhs, Item* rhs)
+{
+	Item temp = *lhs;
+	*lhs = *rhs;
+	*rhs = temp;
 }

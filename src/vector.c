@@ -8,7 +8,7 @@ struct vector
 	size_t		itemSz;			// Size of the item
 	size_t		itemC;			// Number of items in vector
 	size_t		capacity;		// When number of items passes this value, realloc memory
-	Item*		items;			// Items stored by structure
+	Item*		items;			// Items stored by structure, all of the elements stored from 0 to itemC must be on the heap
 };
 
 Vector VecNew(size_t itemSz, size_t startingCapacity)
@@ -151,12 +151,22 @@ Item VecBack(Vector vector)
 	return vector->items[vector->itemC - 1];
 }
 
-size_t VecSize(Vector vector)
+size_t* VecSize(Vector vector)
 {
-	return vector->itemC;
+	return &vector->itemC;
+}
+
+size_t VecCapacity(Vector vector)
+{
+	return vector->capacity;
 }
 
 Item* VecData(Vector vector)
 {
 	return vector->items;
+}
+
+size_t VecElemSz(Vector vector)
+{
+	return vector->itemSz;
 }

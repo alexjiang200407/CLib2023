@@ -2,7 +2,6 @@
 
 #include <stdlib.h>
 #include "types.h"
-#include "iterator.h"
 
 // A vector data structure. Not thread safe
 typedef struct vector* Vector;
@@ -86,8 +85,15 @@ Item VecBack(Vector vector);
 /// </summary>
 /// 
 /// <param name="vector">The vector</param>
-/// <returns>The size of the vector</returns>
-size_t VecSize(Vector vector);
+/// <returns>Pointer to size of the vector</returns>
+size_t* VecSize(Vector vector);
+
+/// <summary>
+/// Gets the capacity of the vector
+/// </summary>
+/// <param name="vector">The vector</param>
+/// <returns>The capacity of the vector</returns>
+size_t VecCapacity(Vector vector);
 
 /// <summary>
 /// Gets the data portion of the vector
@@ -95,3 +101,10 @@ size_t VecSize(Vector vector);
 /// <param name="vector">The specified vector</param>
 /// <returns>The data portion of the vector</returns>
 Item* VecData(Vector vector);
+
+/// <summary>
+/// Gets the size of elements stored in vector
+/// </summary>
+/// <param name="vector">The specified vector</param>
+/// <returns>Element size</returns>
+size_t VecElemSz(Vector vector);
